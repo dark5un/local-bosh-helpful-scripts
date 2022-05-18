@@ -23,7 +23,7 @@ parse_params() {
 
   while :; do
     case "${1-}" in
-    -h | --help) usage "Import binary releases to speed up deployment";;
+    -h | --help) usage "Export binary releases to speed up deployment";;
     -v | --verbose) set -x ;;
     --no-color) NO_COLOR=1 ;;
     -f | --flag) flag=1 ;; # example flag

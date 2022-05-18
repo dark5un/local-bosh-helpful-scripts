@@ -23,7 +23,7 @@ parse_params() {
   # default values of variables set from params
   while :; do
     case "${1-}" in
-    -h | --help) usage "Destroy local BOSH director" ;;
+    -h | --help) usage "Deploy concourse CI local BOSH director" ;;
     -v | --verbose) set -x ;;
     --no-color) NO_COLOR=1 ;;
     -?*) die "Unknown option: $1" ;;
