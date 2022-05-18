@@ -21,3 +21,8 @@
 ./import_binary_releases.sh concourse
 ./concourse.sh
 ```
+
+## System requirements
+
+- whatever [this](https://bosh.io/docs/bosh-lite/#install) says
+- darwin machine (it has been tested on a mac)
