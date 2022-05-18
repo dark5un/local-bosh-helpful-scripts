@@ -16,6 +16,21 @@ cleanup() {
   # script cleanup here
 }
 
+usage() {
+  cat << EOF # remove the space between << and EOF, this is due to web plugin issue
+Usage: $(basename "${BASH_SOURCE[0]}") [-h] [-v] -d deployment_name
+
+Import binary releases to speed up deployment
+
+Available options:
+
+-h, --help        Print this help and exit
+-v, --verbose     Print script debug info
+-d, --deployment  The deployment to export binary releases from
+EOF
+  exit
+}
+
 parse_params() {
   # default values of variables set from params
   flag=0
@@ -23,7 +38,7 @@ parse_params() {
 
   while :; do
     case "${1-}" in
-    -h | --help) usage "Import binary releases to speed up deployment";;
+    -h | --help) usage ;;
     -v | --verbose) set -x ;;
     --no-color) NO_COLOR=1 ;;
     -f | --flag) flag=1 ;; # example flag
