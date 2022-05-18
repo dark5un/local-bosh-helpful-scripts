@@ -1,0 +1,7 @@
+/binary-releases
+/cf-apps
+/stemcells
+/stories
+/bosh-*
+/concourse-*
+/deployments.json
