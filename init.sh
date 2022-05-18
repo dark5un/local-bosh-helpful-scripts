@@ -48,9 +48,9 @@ outbound_network_name: NatNetwork
 local_deployment_path: $script_dir
 EOF
 
-bosh_deployment_path="$script_dir/../bosh-deployment"
+bosh_deployment_path="${script_dir}/../bosh-deployment"
 if [ ! -d "$bosh_deployment_path" ]; then
-  git clone https://github.com/cloudfoundry/bosh-deployment.git "$script_dir/../bosh-deployment"
+  git clone https://github.com/cloudfoundry/bosh-deployment.git "$bosh_deployment_path"
 fi
 
 pushd "$bosh_deployment_path"

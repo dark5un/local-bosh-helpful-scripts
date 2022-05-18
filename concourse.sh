@@ -57,9 +57,9 @@ deployment_name: concourse
 azs: [z1]
 EOF
 
-concourse_bosh_deployment_path="$script_dir/../concourse-bosh-deployment"
+concourse_bosh_deployment_path="${script_dir}/../concourse-bosh-deployment"
 if [ ! -d "$concourse_bosh_deployment_path" ]; then
-  git clone https://github.com/concourse/concourse-bosh-deployment.git "$script_dir/../concourse-bosh-deployment"
+  git clone https://github.com/concourse/concourse-bosh-deployment.git "$concourse_bosh_deployment_path"
 fi
 
 pushd "$concourse_bosh_deployment_path/cluster"
