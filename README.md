@@ -6,7 +6,7 @@
 ./init.sh
 ./post.sh
 ./concourse.sh
-./export_binary_releases.sh concourse
+./export_binary_releases.sh -d concourse
 ```
 
 ## Tear down
@@ -18,7 +18,7 @@
 ```
 ./init.sh
 ./post.sh
-./import_binary_releases.sh concourse
+./import_binary_releases.sh -d concourse
 ./concourse.sh
 ```
 
