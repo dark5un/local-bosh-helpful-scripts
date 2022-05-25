@@ -13,15 +13,6 @@ source "$script_dir/lib.sh"
 
 stemcells_path="$script_dir/stemcells"
 binary_releases_path="$script_dir/binary-releases"
-xenial_stemcell_version=621.125
-xenial_stemcell_url="https://bosh.io/d/stemcells/bosh-warden-boshlite-ubuntu-xenial-go_agent?v=${xenial_stemcell_version}"
-xenial_stemcell_file="$stemcells_path/bosh-warden-boshlite-ubuntu-xenial-${xenial_stemcell_version}.tgz"
-bionic_stemcell_version=1.79
-bionic_stemcell_url="https://bosh.io/d/stemcells/bosh-warden-boshlite-ubuntu-bionic-go_agent?v=${bionic_stemcell_version}"
-bionic_stemcell_file="$stemcells_path/bosh-warden-boshlite-ubuntu-bionic-${bionic_stemcell_version}.tgz"
-bosh_dns_release_version=1.31.0
-bosh_dns_release_url="https://bosh.io/d/github.com/cloudfoundry/bosh-dns-release?v=${bosh_dns_release_version}"
-bosh_dns_release_file="$binary_releases_path/bosh-dns-release-${bosh_dns_release_version}.tgz"
 
 cleanup() {
   trap - SIGINT SIGTERM ERR EXIT
@@ -51,19 +42,38 @@ setup_colors
 mkdir -p "$stemcells_path" "$binary_releases_path"
 bosh -e "$BOSH_ENVIRONMENT" -n update-cloud-config ./cloud-config.yml
 
-if [ ! -f "$xenial_stemcell_file" ]; then
-  wget "${xenial_stemcell_url}" --output-document="${xenial_stemcell_file}"
-fi
-if [ ! -f "$bionic_stemcell_file" ]; then
-  wget "${bionic_stemcell_url}" --output-document="${bionic_stemcell_file}"
-fi
+pushd "$stemcells_path"
+  for s in "ubuntu-xenial" "ubuntu-bionic"; do
+    version_file="${s}.version"
+    touch "$version_file"
+    curl "https://bosh.io/api/v1/stemcells/bosh-warden-boshlite-${s}-go_agent" \
+      -H "Accept: application/json" \
+      --output "bosh-warden-boshlite-${s}-go_agent.json"
+    latest_version="$(bosh interpolate "./bosh-warden-boshlite-${s}-go_agent.json" --path=/0/version)"
+    version_saved="$(cat "$version_file")"
 
-bosh -e "$BOSH_ENVIRONMENT" -n upload-stemcell "$xenial_stemcell_file"
-bosh -e "$BOSH_ENVIRONMENT" -n upload-stemcell "$bionic_stemcell_file"
+    if [ "$latest_version" != "$version_saved" ]; then
+      stemcell_url="$(bosh interpolate "./bosh-warden-boshlite-${s}-go_agent.json" --path=/0/regular/url)"
+      wget "$stemcell_url"
+      echo "$latest_version" > "$version_file"
+    fi
+  done
+popd
+
+pushd "$stemcells_path"
+for s in bosh-stemcell-*-warden-boshlite* ; do
+  bosh -e "$BOSH_ENVIRONMENT" -n upload-stemcell "$s"
+done
+popd
+
+bosh_dns_release_version=1.31.0
+bosh_dns_release_url="https://bosh.io/d/github.com/cloudfoundry/bosh-dns-release?v=${bosh_dns_release_version}"
+bosh_dns_release_file="$binary_releases_path/bosh-dns-release-${bosh_dns_release_version}.tgz"
 
 if [ ! -f "$bosh_dns_release_file" ]; then
   wget "${bosh_dns_release_url}" --output-document="${bosh_dns_release_file}"
 fi
 
 bosh -e "$BOSH_ENVIRONMENT" -n upload-release "${bosh_dns_release_file}"
+
 bosh -e "$BOSH_ENVIRONMENT" -n update-runtime-config ../bosh-deployment/runtime-configs/dns.yml
