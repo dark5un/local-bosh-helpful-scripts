@@ -48,11 +48,13 @@ pushd "$stemcells_path"
     touch "$version_file"
     curl "https://bosh.io/api/v1/stemcells/bosh-warden-boshlite-${s}-go_agent" \
       -H "Accept: application/json" \
+      --silent \
       --output "bosh-warden-boshlite-${s}-go_agent.json"
     latest_version="$(bosh interpolate "./bosh-warden-boshlite-${s}-go_agent.json" --path=/0/version)"
     version_saved="$(cat "$version_file")"
 
     if [ "$latest_version" != "$version_saved" ]; then
+      echo "upgrading stemcell from ${version_saved} to ${latest_version}"
       stemcell_url="$(bosh interpolate "./bosh-warden-boshlite-${s}-go_agent.json" --path=/0/regular/url)"
       wget "$stemcell_url"
       echo "$latest_version" > "$version_file"

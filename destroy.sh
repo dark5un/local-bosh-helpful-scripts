@@ -6,8 +6,6 @@ trap cleanup SIGINT SIGTERM ERR EXIT
 script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd -P)
 
 # global stuff
-# shellcheck source="$script_dir/.envrc"
-source "$script_dir/.envrc"
 # shellcheck source="$script_dir/lib.sh"
 source "$script_dir/lib.sh"
 
@@ -19,6 +17,7 @@ cpi_override="$script_dir/ops/cpi_override.yml"
 cleanup() {
   trap - SIGINT SIGTERM ERR EXIT
   # script cleanup here
+  rm -f "$script_dir/.envrc" "$state" "$creds" "$deployment_vars"
 }
 
 parse_params() {
@@ -41,6 +40,12 @@ parse_params "$@"
 setup_colors
 
 # The code
+if [ -f "$script_dir/.envrc" ]; then
+# shellcheck source="$script_dir/.envrc"
+source "$script_dir/.envrc"
+else
+exit 0
+fi
 
 bosh_deployment_path="$script_dir/../bosh-deployment"
 if [ ! -d "$bosh_deployment_path" ]; then

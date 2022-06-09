@@ -64,9 +64,9 @@ fi
 
 pushd "$concourse_bosh_deployment_path/cluster"
 
-bosh -e $BOSH_ENVIRONMENT -n update-cloud-config cloud_configs/vbox.yml
+bosh -e "$BOSH_ENVIRONMENT" -n update-cloud-config cloud_configs/vbox.yml
 
-bosh -e $BOSH_ENVIRONMENT -n deploy -d concourse concourse.yml \
+bosh -e "$BOSH_ENVIRONMENT" -n deploy -d concourse concourse.yml \
   --vars-store="$vars_store" \
   --ops-file=operations/static-web.yml \
   --ops-file=operations/basic-auth.yml \
